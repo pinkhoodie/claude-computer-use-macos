@@ -95,7 +95,9 @@ class ComputerTool(BaseAnthropicTool):
         **kwargs,
     ):
         print(
-            f"### Performing action: {action}{f", text: {text}" if text else ''}{f", coordinate: {coordinate}" if coordinate else ''}"
+            f"### Performing action: {action}"
+            f"{', text: ' + str(text) if text is not None else ''}"
+            f"{', coordinate: ' + str(coordinate) if coordinate else ''}"
         )
         if action in ("mouse_move", "left_click_drag"):
             if coordinate is None:
@@ -126,11 +128,12 @@ class ComputerTool(BaseAnthropicTool):
             if coordinate is not None:
                 raise ToolError(f"coordinate is not accepted for {action}")
             if not isinstance(text, str):
-                raise ToolError(f"text must be a string")
+                raise ToolError(f"text must be a string, got {type(text)}")
 
             if action == "key":
-                # Handle key combinations and modifiers
-                # Replace 'super' with 'command'
+                # Ensure text is a string before calling lower()
+                if not isinstance(text, str):
+                    raise ToolError(f"text must be a string for key action, got {type(text)}")
                 key_sequence = text.lower().replace("super", "command").split("+")
                 key_sequence = [key.strip() for key in key_sequence]
                 # Map 'cmd' to 'command' for MacOS
@@ -162,10 +165,22 @@ class ComputerTool(BaseAnthropicTool):
                 await asyncio.to_thread(pyautogui.hotkey, *key_sequence)
                 return ToolResult(output=f"Key combination '{text}' pressed.")
             elif action == "type":
-                await asyncio.to_thread(
-                    pyautogui.write, text, interval=TYPING_DELAY_MS / 1000.0
-                )
-                return ToolResult(output=f"Typed text: {text}")
+                # Ensure text is a string
+                if not isinstance(text, str):
+                    raise ToolError(f"text must be a string for type action, got {type(text)}")
+                # Check if text ends with an "Enter" character
+                if text.endswith("\n"):
+                    text = text.rstrip("\n")  # Remove the newline character
+                    await asyncio.to_thread(
+                        pyautogui.write, text, interval=TYPING_DELAY_MS / 1000.0
+                    )
+                    await asyncio.to_thread(pyautogui.press, "enter")
+                    return ToolResult(output=f"Typed text: {text} and pressed Enter")
+                else:
+                    await asyncio.to_thread(
+                        pyautogui.write, text, interval=TYPING_DELAY_MS / 1000.0
+                    )
+                    return ToolResult(output=f"Typed text: {text}")
 
         if action in (
             "left_click",
