@@ -15,6 +15,10 @@ from computer_use_demo.loop import sampling_loop, APIProvider
 from computer_use_demo.tools import ToolResult
 from anthropic.types.beta import BetaMessage, BetaMessageParam
 from anthropic import APIResponse
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class ChatInterface:
@@ -130,14 +134,12 @@ class ChatInterface:
             self.entry_field.insert(0, 'Enter text here')
             self.entry_field.config(fg = 'grey')
 
-    def send_message(self, event=None):
-        message = self.entry_field.get()
+    def send_message(self, message):
         if message and message != 'Enter text here':
             self.display_message(message)
             self.messages.append({"role": "user", "content": message})
             self.entry_field.delete(0, tk.END)
             self.root.after(0, self.process_message)
-        self.on_focusout(None)  # Reset placeholder if empty
 
     def process_message(self):
         asyncio.run(self.run_sampling_loop())
@@ -147,9 +149,12 @@ class ChatInterface:
         retry_count = 0
         while retry_count < max_retries:
             try:
-                api_key = os.getenv("ANTHROPIC_API_KEY", "YOUR_API_KEY_HERE")
+                api_key = os.getenv("ANTHROPIC_API_KEY")
                 if api_key == "YOUR_API_KEY_HERE":
                     raise ValueError("Please set your API key in the ANTHROPIC_API_KEY environment variable")
+                
+                # Debug print statement to check if the API key is being loaded correctly
+                print(f"Debug: API key loaded: {api_key[:5]}...{api_key[-5:]}")
 
                 provider = APIProvider.ANTHROPIC
 
@@ -223,6 +228,11 @@ class ChatInterface:
 def main():
     root = tk.Tk()
     chat_interface = ChatInterface(root)
+    
+    if len(sys.argv) > 1:
+        initial_message = ' '.join(sys.argv[1:])
+        root.after(100, lambda: chat_interface.send_message(initial_message))
+    
     root.mainloop()
 
 

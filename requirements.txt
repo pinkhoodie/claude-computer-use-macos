@@ -1,3 +1,6 @@
 anthropic[bedrock,vertex]>=0.37.1
 pillow
 PyAutoGUI
+python-dotenv
+markdown
+beautifulsoup4
