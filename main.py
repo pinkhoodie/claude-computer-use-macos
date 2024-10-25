@@ -134,7 +134,8 @@ class ChatInterface:
             self.entry_field.insert(0, 'Enter text here')
             self.entry_field.config(fg = 'grey')
 
-    def send_message(self, message):
+    def send_message(self, event=None):
+        message = self.entry_field.get()
         if message and message != 'Enter text here':
             self.display_message(message)
             self.messages.append({"role": "user", "content": message})
@@ -213,6 +214,11 @@ class ChatInterface:
                     self.display_message("Max retries reached. Please try again later.", sender="System")
                     # Reset messages to the last known good state
                     self.messages = self.messages[:-1]  # Remove the last user message that caused the error
+        
+        # If we've exhausted all retries, clear the entry field
+        self.entry_field.delete(0, tk.END)
+        self.entry_field.insert(0, "Enter text here")
+        self.entry_field.config(fg='grey')
 
     def filter_api_response(self, content):
         filtered_content = []

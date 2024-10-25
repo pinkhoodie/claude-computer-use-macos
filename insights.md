@@ -6,7 +6,16 @@ Often used apps that aren't common that you should consider their UI seriously:
 
 Superhuman: The subject line is below the "to" field when composing an email, unlike traditional email clients.
 
-Arc Browser: Chromium based browser with similar shortcuts to Chrome. Use `open -a Arc`. It has a sidebar for managing tabs and spaces, different from the traditional tab bar at the top.
+Arc Browser: Chromium based default browser with similar shortcuts to Chrome. Use `open -a Arc`. It has a sidebar for managing tabs and spaces, different from the traditional tab bar at the top.
+
+Cursor: Use `open -a Cursor`. It's an AI-powered code editor with unique features:
+
+- Left sidebar for file/project management
+- Right-side AI chat interface for code assistance
+- In-line AI suggestions and multiple cursors
+- Command palette (Cmd/Ctrl+Shift+P) for quick actions
+- Git integration, integrated terminal, and AI-assisted refactoring
+- Theme switcher in bottom-left, status bar at bottom
 
 Texts.com App: Use `open -a Texts`. The main chat interface is minimalistic and focuses on conversation threads, unlike traditional messaging apps with more cluttered interfaces.
 
